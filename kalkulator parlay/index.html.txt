@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulator Parlay Profesional</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Inter", Arial, sans-serif;
+      background: #f4f6f9;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .card {
+      background: white;
+      padding: 25px;
+      width: 100%;
+      max-width: 480px;
+      border-radius: 14px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+    h2 { margin-top: 0; text-align: center; }
+    input, button {
+      width: 100%;
+      padding: 13px;
+      margin: 7px 0;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      background: #2d68ff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    button:hover { background: #1b4cd1; }
+    .odd-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .remove-btn {
+      background: #e74c3c;
+      padding: 10px;
+      font-size: 14px;
+    }
+    .result {
+      margin-top: 20px;
+      background: #eef2ff;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 17px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Kalkulator Parlay</h2>
+
+  <div id="oddsContainer"></div>
+
+  <button onclick="addOdd()">+ Tambah Odd</button>
+
+  <h3>Stake (Jumlah Taruhan)</h3>
+  <input type="number" id="stake" placeholder="Masukkan jumlah taruhan">
+
+  <button onclick="calculate()">Hitung Parlay</button>
+
+  <div class="result" id="result">Hasil akan tampil di sini...</div>
+</div>
+
+<script>
+let count = 0;
+
+function addOdd() {
+  count++;
+  const container = document.getElementById('oddsContainer');
+
+  const row = document.createElement('div');
+  row.className = 'odd-row';
+  row.id = 'row-' + count;
+
+  row.innerHTML = `
+    <input type="number" step="0.01" placeholder="Odd #${count}" id="odd-${count}">
+    <button class="remove-btn" onclick="removeOdd(${count})">X</button>
+  `;
+
+  container.appendChild(row);
+}
+
+function removeOdd(id) {
+  const row = document.getElementById('row-' + id);
+  row.remove();
+}
+
+function formatRupiah(num) {
+  return num.toLocaleString("id-ID", { minimumFractionDigits: 0 });
+}
+
+function calculate() {
+  const oddsContainer = document.querySelectorAll('.odd-row input');
+  let totalOdd = 1;
+
+  oddsContainer.forEach(input => {
+    const val = parseFloat(input.value);
+    if (!isNaN(val) && val > 1) totalOdd *= val;
+  });
+
+  const stake = parseFloat(document.getElementById('stake').value);
+  if (!stake) {
+    document.getElementById('result').innerHTML = "Masukkan stake terlebih dahulu.";
+    return;
+  }
+
+  const payout = totalOdd * stake;
+
+  document.getElementById('result').innerHTML =
+    `<b>Total Odd:</b> ${totalOdd.toFixed(2)}<br>
+     <b>Potensi Payout:</b> Rp ${formatRupiah(Math.floor(payout))}`;
+}
+
+// Tambahkan input odd awal
+addOdd();
+addOdd();
+</script>
+
+</body>
+</html>
